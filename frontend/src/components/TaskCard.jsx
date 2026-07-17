@@ -1,28 +1,46 @@
 import React from 'react';
-import { FaCalendarAlt, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaRegCalendar } from 'react-icons/fa';
 
 const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
   const getPriorityStyle = (priority) => {
     switch (priority) {
       case 'High':
-        return 'bg-rose-50 border-rose-200 text-rose-700';
+        return {
+          pill: 'bg-rose-50 border-rose-100 text-rose-750',
+          dot: 'bg-rose-500',
+        };
       case 'Medium':
-        return 'bg-blue-50 border-blue-200 text-blue-700';
+        return {
+          pill: 'bg-amber-50 border-amber-105 text-amber-750',
+          dot: 'bg-amber-500',
+        };
       case 'Low':
       default:
-        return 'bg-slate-100 border-slate-200 text-slate-600';
+        return {
+          pill: 'bg-emerald-55/60 border-emerald-100 text-emerald-750',
+          dot: 'bg-emerald-500',
+        };
     }
   };
 
   const getStatusStyle = (status) => {
     switch (status) {
       case 'Completed':
-        return 'bg-emerald-50 border-emerald-200 text-emerald-700';
+        return {
+          pill: 'bg-emerald-55/60 border-emerald-100 text-emerald-750',
+          dot: 'bg-emerald-500',
+        };
       case 'In Progress':
-        return 'bg-indigo-50 border-indigo-200 text-indigo-700';
+        return {
+          pill: 'bg-blue-50 border-blue-100 text-blue-750',
+          dot: 'bg-blue-500',
+        };
       case 'Pending':
       default:
-        return 'bg-amber-50 border-amber-200 text-amber-700';
+        return {
+          pill: 'bg-slate-100 border-slate-200/80 text-slate-600',
+          dot: 'bg-slate-500',
+        };
     }
   };
 
@@ -35,81 +53,82 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
     });
   };
 
-  const isOverdue = (dateString, status) => {
-    if (status === 'Completed') return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return new Date(dateString) < today;
+  const handleCheckboxChange = () => {
+    const nextStatus = task.status === 'Completed' ? 'Pending' : 'Completed';
+    onStatusChange(task._id, nextStatus);
   };
 
+  const prio = getPriorityStyle(task.priority);
+  const stat = getStatusStyle(task.status);
+
   return (
-    <div className="glass-card rounded-2xl p-5 flex flex-col justify-between h-full border border-slate-200/80 shadow-sm relative overflow-hidden animate-fade-in">
-      {/* Top badges */}
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <span className={`px-2.5 py-1 text-xs font-semibold rounded-md border uppercase tracking-wider ${getPriorityStyle(task.priority)}`}>
-          {task.priority} Priority
-        </span>
-        <span className={`px-2.5 py-1 text-xs font-semibold rounded-md border uppercase tracking-wider ${getStatusStyle(task.status)}`}>
+    <tr className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-150">
+      {/* Checkbox & Task Details */}
+      <td className="px-6 py-4 align-middle">
+        <div className="flex items-start gap-4">
+          <div className="pt-0.5">
+            <input
+              type="checkbox"
+              checked={task.status === 'Completed'}
+              onChange={handleCheckboxChange}
+              className="w-4.5 h-4.5 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer transition duration-150"
+            />
+          </div>
+          <div>
+            <div className={`text-sm font-semibold text-slate-800 tracking-tight ${task.status === 'Completed' ? 'line-through text-slate-400 font-normal' : ''}`}>
+              {task.title}
+            </div>
+            <div className={`text-xs text-slate-500 mt-0.5 leading-relaxed max-w-md ${task.status === 'Completed' ? 'line-through text-slate-400' : ''}`}>
+              {task.description || 'No description provided.'}
+            </div>
+          </div>
+        </div>
+      </td>
+
+      {/* Priority Badge */}
+      <td className="px-6 py-4 align-middle">
+        <div className={`px-2.5 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 w-fit ${prio.pill}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${prio.dot}`}></span>
+          {task.priority}
+        </div>
+      </td>
+
+      {/* Status Badge */}
+      <td className="px-6 py-4 align-middle">
+        <div className={`px-2.5 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 w-fit ${stat.pill}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${stat.dot}`}></span>
           {task.status}
-        </span>
-      </div>
-
-      {/* Title & Description */}
-      <div className="flex-1 mb-4">
-        <h3 className={`text-lg font-bold text-slate-800 line-clamp-2 ${task.status === 'Completed' ? 'line-through text-slate-400 decoration-slate-400' : ''}`}>
-          {task.title}
-        </h3>
-        <p className={`text-sm text-slate-600 mt-2 line-clamp-3 ${task.status === 'Completed' ? 'text-slate-400' : ''}`}>
-          {task.description || 'No description provided.'}
-        </p>
-      </div>
-
-      {/* Bottom section (Date, Status change, Actions) */}
-      <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
-        {/* Due Date */}
-        <div className="flex items-center gap-2 text-xs">
-          <FaCalendarAlt className={isOverdue(task.dueDate, task.status) ? 'text-rose-600' : 'text-slate-450'} />
-          <span className={isOverdue(task.dueDate, task.status) ? 'text-rose-600 font-semibold' : 'text-slate-450'}>
-            Due: {formatDate(task.dueDate)}
-            {isOverdue(task.dueDate, task.status) && ' (Overdue)'}
-          </span>
         </div>
+      </td>
 
-        {/* Quick Status and Action Controls */}
-        <div className="flex items-center justify-between gap-2 mt-1">
-          {/* Status Quick changer dropdown */}
-          <div className="relative flex-1">
-            <select
-              value={task.status}
-              onChange={(e) => onStatusChange(task._id, e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-indigo-500 transition-all duration-200 cursor-pointer shadow-sm"
-            >
-              <option value="Pending">Move to Pending</option>
-              <option value="In Progress">Move to In Progress</option>
-              <option value="Completed">Move to Completed</option>
-            </select>
-          </div>
-
-          {/* Edit / Delete Buttons */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onEdit(task)}
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition-all duration-200 cursor-pointer"
-              title="Edit Task"
-            >
-              <FaEdit className="text-sm" />
-            </button>
-            <button
-              onClick={() => onDelete(task._id)}
-              className="p-2 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-slate-200 transition-all duration-200 cursor-pointer"
-              title="Delete Task"
-            >
-              <FaTrash className="text-sm" />
-            </button>
-          </div>
+      {/* Due Date */}
+      <td className="px-6 py-4 align-middle whitespace-nowrap">
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-650">
+          <FaRegCalendar className="text-slate-400 text-sm" />
+          <span>{formatDate(task.dueDate)}</span>
         </div>
-      </div>
-    </div>
+      </td>
+
+      {/* Action Buttons */}
+      <td className="px-6 py-4 align-middle whitespace-nowrap text-right">
+        <div className="flex items-center gap-2 justify-end">
+          <button
+            onClick={() => onEdit(task)}
+            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors duration-150 cursor-pointer"
+            title="Edit Task"
+          >
+            <FaEdit className="text-sm" />
+          </button>
+          <button
+            onClick={() => onDelete(task._id)}
+            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors duration-150 cursor-pointer"
+            title="Delete Task"
+          >
+            <FaTrash className="text-sm" />
+          </button>
+        </div>
+      </td>
+    </tr>
   );
 };
 
