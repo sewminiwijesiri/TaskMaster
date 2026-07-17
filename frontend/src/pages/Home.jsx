@@ -3,12 +3,11 @@ import FilterBar from '../components/FilterBar';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
 import { getTasks, createTask, updateTask, deleteTask } from '../services/taskService';
-import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationCircle, FaPlus, FaClipboardList, FaClock, FaSyncAlt } from 'react-icons/fa';
 
-const Home = ({ setTaskStats }) => {
+const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ status: '', priority: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -32,7 +31,7 @@ const Home = ({ setTaskStats }) => {
     fetchTasksData();
   }, [filters]);
 
-  // Dynamically calculate and bubble stats up to navbar
+  // Calculate and store task statistics
   const calculateStats = (taskList) => {
     const stats = { pending: 0, inProgress: 0, completed: 0 };
     taskList.forEach((t) => {
@@ -107,8 +106,10 @@ const Home = ({ setTaskStats }) => {
     return titleMatch || descMatch;
   });
 
+  const totalTasksCount = taskStats.pending + taskStats.inProgress + taskStats.completed;
+
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8 flex-1 w-full space-y-6">
+    <main className="flex-1 bg-slate-55 px-8 py-8 space-y-6 min-h-screen overflow-y-auto w-full">
       {/* Toast Notification */}
       {notification.message && (
         <div
@@ -127,24 +128,83 @@ const Home = ({ setTaskStats }) => {
         </div>
       )}
 
-      {/* Title section */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* Header section with "+ Add Task" button */}
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900">Your Workspace</h2>
-          <p className="text-sm text-slate-500 mt-1">Add, update, filter and organize your daily items.</p>
+          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Task Management</h2>
+          <p className="text-sm text-slate-500 mt-1.5 font-medium">
+            Organize your tasks and boost your productivity.
+          </p>
+        </div>
+        <button
+          onClick={handleOpenCreateForm}
+          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+        >
+          <FaPlus className="text-xs" />
+          <span>Add Task</span>
+        </button>
+      </div>
+
+      {/* Metrics Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Tasks Card */}
+        <div className="bg-blue-50/40 border border-blue-100 rounded-2xl p-5 flex items-center gap-4">
+          <div className="p-3 bg-white text-blue-600 rounded-xl shadow-sm flex items-center justify-center shrink-0">
+            <FaClipboardList className="text-xl" />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">Total Tasks</span>
+            <span className="text-3xl font-black text-slate-800 block leading-tight mt-0.5">{totalTasksCount}</span>
+            <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">All tasks</span>
+          </div>
+        </div>
+
+        {/* Pending Card */}
+        <div className="bg-amber-50/40 border border-amber-100/80 rounded-2xl p-5 flex items-center gap-4">
+          <div className="p-3 bg-white text-amber-550 rounded-xl shadow-sm flex items-center justify-center shrink-0">
+            <FaClock className="text-xl" />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">Pending</span>
+            <span className="text-3xl font-black text-slate-800 block leading-tight mt-0.5">{taskStats.pending}</span>
+            <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">Tasks to do</span>
+          </div>
+        </div>
+
+        {/* In Progress Card */}
+        <div className="bg-indigo-50/40 border border-indigo-100/80 rounded-2xl p-5 flex items-center gap-4">
+          <div className="p-3 bg-white text-indigo-650 rounded-xl shadow-sm flex items-center justify-center shrink-0 animate-spin-slow">
+            <FaSyncAlt className="text-lg" />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">In Progress</span>
+            <span className="text-3xl font-black text-slate-800 block leading-tight mt-0.5">{taskStats.inProgress}</span>
+            <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">Tasks in progress</span>
+          </div>
+        </div>
+
+        {/* Completed Card */}
+        <div className="bg-emerald-50/40 border border-emerald-100/80 rounded-2xl p-5 flex items-center gap-4">
+          <div className="p-3 bg-white text-emerald-600 rounded-xl shadow-sm flex items-center justify-center shrink-0">
+            <FaCheckCircle className="text-xl" />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">Completed</span>
+            <span className="text-3xl font-black text-slate-800 block leading-tight mt-0.5">{taskStats.completed}</span>
+            <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">Tasks completed</span>
+          </div>
         </div>
       </div>
 
-      {/* Filter and search bar */}
+      {/* Filter controls and Search Box */}
       <FilterBar
         filters={filters}
         setFilters={setFilters}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        onAddTaskClick={handleOpenCreateForm}
       />
 
-      {/* Task list displaying the grid of task cards */}
+      {/* Task table list */}
       <TaskList
         tasks={filteredTasks}
         loading={loading}
@@ -153,7 +213,7 @@ const Home = ({ setTaskStats }) => {
         onStatusChange={handleQuickStatusChange}
       />
 
-      {/* Create/Edit Modal form popup */}
+      {/* Form modal */}
       <TaskForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
