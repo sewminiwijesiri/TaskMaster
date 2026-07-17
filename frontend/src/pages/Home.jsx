@@ -13,11 +13,11 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [notification, setNotification] = useState({ type: '', message: '' });
 
-  // Fetch tasks when filters change
+  // Fetch all tasks for stats calculation and local filtering
   const fetchTasksData = async () => {
     try {
       setLoading(true);
-      const data = await getTasks(filters);
+      const data = await getTasks({});
       setTasks(data);
       calculateStats(data);
     } catch (error) {
@@ -29,7 +29,7 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
 
   useEffect(() => {
     fetchTasksData();
-  }, [filters]);
+  }, []);
 
   // Calculate and store task statistics
   const calculateStats = (taskList) => {
@@ -99,11 +99,13 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
     }
   };
 
-  // Perform search text filtering locally for instantaneous UI updates
+  // Perform search text, status, and priority filtering locally for instantaneous UI updates
   const filteredTasks = tasks.filter((task) => {
+    const statusMatch = !filters.status || task.status === filters.status;
+    const priorityMatch = !filters.priority || task.priority === filters.priority;
     const titleMatch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
     const descMatch = (task.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-    return titleMatch || descMatch;
+    return statusMatch && priorityMatch && (titleMatch || descMatch);
   });
 
   const totalTasksCount = taskStats.pending + taskStats.inProgress + taskStats.completed;
