@@ -12,6 +12,9 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [notification, setNotification] = useState({ type: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [taskToDeleteId, setTaskToDeleteId] = useState(null);
 
   // Fetch all tasks for stats calculation and local filtering
   const fetchTasksData = async () => {
@@ -61,31 +64,42 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
 
   const handleFormSubmit = async (formData) => {
     try {
+      setIsSubmitting(true);
       if (editingTask) {
         // Update task
         await updateTask(editingTask._id, formData);
-        showNotification('success', 'Task updated successfully!');
+        showNotification('success', 'Task updated successfully.');
       } else {
         // Create task
         await createTask(formData);
-        showNotification('success', 'Task created successfully!');
+        showNotification('success', 'Task created successfully.');
       }
       setIsFormOpen(false);
       fetchTasksData();
     } catch (error) {
       showNotification('error', error.response?.data?.message || 'Error saving task.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleDeleteTask = async (id) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      try {
-        await deleteTask(id);
+  const handleDeleteTask = (id) => {
+    setTaskToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const executeDeleteTask = async () => {
+    try {
+      if (taskToDeleteId) {
+        await deleteTask(taskToDeleteId);
         showNotification('success', 'Task deleted successfully.');
         fetchTasksData();
-      } catch (error) {
-        showNotification('error', 'Failed to delete task.');
       }
+    } catch (error) {
+      showNotification('error', 'Failed to delete task.');
+    } finally {
+      setIsDeleteModalOpen(false);
+      setTaskToDeleteId(null);
     }
   };
 
@@ -221,7 +235,42 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleFormSubmit}
         task={editingTask}
+        isSubmitting={isSubmitting}
       />
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsDeleteModalOpen(false)}
+          />
+
+          {/* Modal Container */}
+          <div className="glass-panel w-full max-w-md rounded-2xl shadow-2xl border border-slate-200/80 relative z-50 overflow-hidden p-6 animate-fade-in space-y-4">
+            <h3 className="text-lg font-bold text-slate-900">Delete Task?</h3>
+            <p className="text-sm text-slate-650 leading-relaxed">
+              Are you sure you want to delete this task? This action cannot be undone.
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeDeleteTask}
+                className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold shadow-sm transition cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
