@@ -14,12 +14,12 @@ const TaskList = ({ tasks, loading, onEdit, onDelete, onStatusChange }) => {
 
   if (tasks.length === 0) {
     return (
-      <div className="glass-panel rounded-2xl p-10 py-16 flex flex-col items-center justify-center border border-slate-800/80 shadow-md text-center max-w-md mx-auto animate-fade-in">
-        <div className="p-4 bg-slate-800/50 rounded-full text-slate-500 mb-4">
+      <div className="glass-panel rounded-2xl p-10 py-16 flex flex-col items-center justify-center border border-slate-200/80 shadow-sm text-center max-w-md mx-auto animate-fade-in">
+        <div className="p-4 bg-slate-100 rounded-full text-slate-400 mb-4">
           <FaInbox className="text-3xl" />
         </div>
-        <h4 className="text-lg font-bold text-slate-250">No tasks found</h4>
-        <p className="text-sm text-slate-450 mt-2 px-4">
+        <h4 className="text-lg font-bold text-slate-800">No tasks found</h4>
+        <p className="text-sm text-slate-500 mt-2 px-4">
           Get started by creating a task, or adjust your filter query above!
         </p>
       </div>

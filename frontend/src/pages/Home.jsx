@@ -114,14 +114,14 @@ const Home = ({ setTaskStats }) => {
         <div
           className={`fixed bottom-6 right-6 px-5 py-3.5 rounded-xl shadow-2xl border text-sm font-semibold animate-fade-in z-50 flex items-center gap-2.5 transition-all duration-300 ${
             notification.type === 'error'
-              ? 'bg-rose-500/10 border-rose-500/20 text-rose-450'
-              : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-450'
+              ? 'bg-rose-50 border-rose-200 text-rose-700'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-700'
           }`}
         >
           {notification.type === 'error' ? (
-            <FaExclamationCircle className="text-base text-rose-400" />
+            <FaExclamationCircle className="text-base text-rose-500" />
           ) : (
-            <FaCheckCircle className="text-base text-emerald-400" />
+            <FaCheckCircle className="text-base text-emerald-500" />
           )}
           <span>{notification.message}</span>
         </div>
@@ -130,8 +130,8 @@ const Home = ({ setTaskStats }) => {
       {/* Title section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-white">Your Workspace</h2>
-          <p className="text-sm text-slate-400 mt-1">Add, update, filter and organize your daily items.</p>
+          <h2 className="text-2xl font-extrabold text-slate-900">Your Workspace</h2>
+          <p className="text-sm text-slate-500 mt-1">Add, update, filter and organize your daily items.</p>
         </div>
       </div>
 
