@@ -214,8 +214,6 @@ const Home = ({ filters, setFilters, taskStats, setTaskStats }) => {
 
       {/* Filter controls and Search Box */}
       <FilterBar
-        filters={filters}
-        setFilters={setFilters}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />

@@ -1,45 +1,59 @@
-# TaskMaster - Task Management Web Application
+# TaskFMaster - Task Management Web Application
 
-TaskMaster is a modern, responsive, and user-friendly Task Management Web Application that allows users to seamlessly plan, prioritize, track, and complete daily tasks.
-
-The project is built on the **MERN** stack (MongoDB, Express, React, Node.js) using **Tailwind CSS v4** and **Vite** for the client-side experience.
+TaskFlow is a basic web application designed to help users create, view, organize, and manage their daily tasks efficiently. The project is split into a **Node.js/Express backend** connected to a MongoDB database, and a responsive **React/Vite frontend** styled with Tailwind CSS v4.
 
 ---
 
 ## Features
 
-- **Full CRUD Support**: Add, view, edit, and delete tasks.
-- **Client-Side Validation**: Strict validation rules for inputs (Title, Description, Priority, and Due Date) with instant visual warning clearing.
-- **Autofocus Ref Feedback**: Invalided form submissions automatically lock operations and highlight the first incorrect field.
-- **Overall Statistics Dashboard**: Quick dashboard tracking counts for Total, Pending, In Progress, and Completed tasks globally.
-- **Instant Client-Side Filtering**: Dynamic filtering by Priority, Status, and search terms locally for lightning-fast updates.
-- **Modern UI/UX**: Custom delete confirmation modals, custom scrollbars, clean table structures, and subtle animations.
-- **Responsive Layout**: Designed for mobile, tablet, and desktop screens.
+- **Create Tasks**: Add tasks with a title, description, priority (Low, Medium, High), and due date.
+- **View Tasks**: Display all tasks in a structured data table format.
+- **Form Validation**: Strict client-side validation rules for all required fields, including preventing selection of past due dates, with real-time error indicators and autofocus highlights.
+- **Interactive Metrics**: Global real-time dashboard tracking the count of *Total Tasks*, *Pending*, *In Progress*, and *Completed* tasks.
+- **Status Toggling**: Toggle task status directly via table row checkboxes or move tasks between states (*Pending*, *In Progress*, *Completed*) using quick selectors.
+- **Search & Filters**: Filter tasks dynamically by status and priority, alongside instantaneous text searches matching title and description.
+- **Pagination**: Client-side data paging displaying 6 tasks per page.
+- **Delete Confirmation Dialog**: Custom modal confirming deletion of tasks securely.
+- **Success & Error Feedback**: Clean success toast alert banners for updates, creation, and deletions.
 
 ---
 
-## Directory Structure
+## Tech Stack
 
-```text
-TaskMaster
-├── backend
-│   ├── config          # MongoDB Connection config
-│   ├── controllers     # Task CRUD endpoint logic
-│   ├── models          # Mongoose Task Schema model
-│   ├── routes          # Task Express Router routes
-│   ├── .env            # Environment configuration
-│   └── server.js       # Express server entry point
+- **Frontend**: React (19), Vite (8), Tailwind CSS (v4), Axios, React Icons.
+- **Backend**: Node.js, Express, MongoDB, Mongoose, Dotenv, CORS, Nodemon.
+
+---
+
+## Folder Structure
+
+```
+TaskManagement/
+├── backend/
+│   ├── config/
+│   │   └── db.js            # MongoDB database connection
+│   ├── controllers/
+│   │   └── taskController.js # CRUD handlers and query parameters logic
+│   ├── models/
+│   │   └── Task.js          # Mongoose Schema definition for Task
+│   ├── routes/
+│   │   └── taskRoutes.js    # API routing pathways
+│   ├── .env                 # Environment variables (port, db connection string)
+│   ├── server.js            # Express application setup and server entry point
+│   └── package.json         # Backend dependancies
 │
-└── frontend
-    ├── src
-    │   ├── components  # Navbar/Sidebar, FilterBar, TaskList, TaskCard, TaskForm
-    │   ├── pages       # Home dashboard container page
-    │   └── services    # Axios API communication configuration
-    │   ├── App.jsx     # Main React entry shell
-    │   └── main.jsx    # React bootstrapping entry point
-    │
-    ├── index.html      # Vite client page entry
-    └── vite.config.js  # Vite configurations
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components (Navbar/Sidebar, Form, Card, List, Filters)
+│   │   ├── pages/           # Pages container (Home dashboard)
+│   │   ├── services/        # Axios API callers (taskService.js)
+│   │   ├── App.jsx          # Component integration
+│   │   ├── index.css        # Base styles and animations
+│   │   └── main.jsx         # React application entry point
+│   ├── vite.config.js       # Vite configuration (registers Tailwind compiler)
+│   └── package.json         # Frontend dependencies
+│
+└── README.md                # Project documentation & setup instructions
 ```
 
 ---
@@ -47,16 +61,17 @@ TaskMaster
 ## Getting Started
 
 ### Prerequisites
-Make sure you have the following installed on your machine:
-- **Node.js** (v18.x or higher recommended)
-- **npm** (v9.x or higher)
-- **MongoDB** (Local instance running on `mongodb://127.0.0.1:27017` or a MongoDB Atlas account)
+
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v16+ recommended)
+- npm (Node Package Manager)
+- [MongoDB](https://www.mongodb.com/) (either running locally or a remote MongoDB Atlas database cluster)
 
 ---
 
-### 1. Backend Setup
+### Backend Installation & Setup
 
-1. Open your terminal and navigate to the `backend` folder:
+1. Navigate to the backend directory:
    ```bash
    cd backend
    ```
@@ -66,61 +81,57 @@ Make sure you have the following installed on your machine:
    npm install
    ```
 
-3. Create and configure the environment variables file (`.env`):
-   Create a file named `.env` in the `backend` folder and insert:
+3. Configure the environment variables. Create a `.env` file inside the `backend` folder and add your configuration details:
    ```env
    PORT=5000
-   MONGODB_URI=your_mongodb_connection_uri
+   MONGODB_URI=mongodb://127.0.0.1:27017/taskmanager
+   # Alternatively, use your MongoDB Atlas connection string:
+   # MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/taskmanager
    ```
-   *Note: If using **MongoDB Atlas**, ensure that your network IP address is added to the IP whitelist in the Atlas Console (Network Access -> Whitelist) to avoid connection timeout crashes.*
 
-4. Run the backend server in development mode:
+4. Start the backend server in development mode using Nodemon:
    ```bash
    npm run dev
    ```
-   The backend API will start running at `http://localhost:5000`.
+   *The console should output: `Server running on port 5000` and `MongoDB Connected: <host>`.*
 
 ---
 
-### 2. Frontend Setup
+### Frontend Installation & Setup
 
-1. Open a new terminal tab and navigate to the `frontend` folder:
+1. Open a new terminal and navigate to the frontend directory:
    ```bash
    cd frontend
    ```
 
-2. Install the client-side dependencies:
+2. Install the frontend dependencies:
    ```bash
    npm install
    ```
 
-3. (Optional) Configure custom API urls:
-   By default, the React frontend is configured to target `http://localhost:5000/api/tasks`. If your backend runs on a different host/port, create a `.env` file in the `frontend` directory:
-   ```env
-   VITE_API_URL=http://your_custom_api_address/api/tasks
-   ```
-
-4. Start the frontend development server:
+3. Start the Vite local development server:
    ```bash
    npm run dev
    ```
-   The dev server will spin up, typically at `http://localhost:5173`. Open this URL in your web browser.
+   *By default, the frontend app will run on: `http://localhost:5173`.*
 
-5. Build the assets for production deployment:
-   ```bash
-   npm run build
-   ```
+4. Open `http://localhost:5173` in your web browser to start using TaskFlow.
 
 ---
 
-## API Endpoints Reference
+## API Reference
 
-The backend exposes the following endpoints under `/api/tasks`:
+All requests must be made to the following base URL:
+```
+http://localhost:5000/api/tasks
+```
 
-| Method | Endpoint | Description | Request Body Example |
+### Endpoints
+
+| Method | Endpoint | Description | Request Body (JSON) |
 | :--- | :--- | :--- | :--- |
-| **POST** | `/` | Create a new task | `{ "title": "Buy groceries", "description": "Milk, eggs, fruit", "priority": "Medium", "dueDate": "2026-07-20" }` |
-| **GET** | `/` | Retrieve all tasks | *(Optional status/priority query filters can be appended)* |
-| **GET** | `/:id` | Fetch task by database ID | *None* |
-| **PUT** | `/:id` | Update task details / status | `{ "status": "In Progress" }` |
-| **DELETE** | `/:id` | Delete a task | *None* |
+| **POST** | `/` | Create a new task | `{ title, description, priority, dueDate, status }` |
+| **GET** | `/` | Retrieve all tasks | *(Optional status/priority queries: `?status=Pending`)* |
+| **GET** | `/:id` | Fetch details of a single task | None |
+| **PUT** | `/:id` | Update details of an existing task | `{ title, description, priority, dueDate, status }` |
+| **DELETE** | `/:id` | Delete a task from the database | None |
