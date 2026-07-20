@@ -1,4 +1,4 @@
-# TaskFlow - Task Management Web Application
+# TaskFMaster - Task Management Web Application
 
 TaskFlow is a basic web application designed to help users create, view, organize, and manage their daily tasks efficiently. The project is split into a **Node.js/Express backend** connected to a MongoDB database, and a responsive **React/Vite frontend** styled with Tailwind CSS v4.
 
